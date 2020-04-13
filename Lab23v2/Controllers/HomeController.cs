@@ -66,7 +66,8 @@ namespace Lab23v2.Controllers
                 HttpContext.Session.SetString("First Name", data.Fname.ToString());
                 HttpContext.Session.SetString("Wallet", data.Wallet.ToString());
                 HttpContext.Session.SetString("Email", data.Email.ToString());
-                return RedirectToAction("Index");
+                ViewBag.Name = HttpContext.Session.GetString("First Name");
+                return View("Index");
             }
             else
             {

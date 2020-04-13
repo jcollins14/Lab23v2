@@ -4,5 +4,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>to the Grand Rapids Keyboard Shop</p>
+
+    @if (ViewBag.Name != null)
+    {
+        <p>Logged in as @ViewBag.Name.</p>
+    }
 </div>

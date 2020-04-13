@@ -26,23 +26,24 @@ namespace Lab23v2.Controllers
             {
             ViewBag.User = HttpContext.Session.GetString("First Name");
             ViewBag.Wallet = int.Parse(HttpContext.Session.GetString("Wallet"));
-            ViewBag.Email = HttpContext.Session.GetString("Email");
             }
             return View(await _context.Items.ToListAsync());
         }
 
-        public IActionResult Buy(Items item)
+        public IActionResult Buy(int? id)
         {
-            if (item.Price < ViewBag.Wallet)
+            string email = HttpContext.Session.GetString("Email");
+            var item = _context.Items.Where(x => x.ItemId == id).FirstOrDefault();
+            var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
+            if (item.Price < user.Wallet)
             {
                 item.Quantity--;
                 _context.Items.Update(item);
                 _context.SaveChanges();
-                ViewBag.Wallet = ((int.Parse(ViewBag.Wallet) - item.Price).ToString());
-                string check = ViewBag.Email;
-                var save = _context.Users.Where(x => x.Email == check).FirstOrDefault();
-                save.Wallet -= item.Price;
-                _context.Users.Update(save);
+                user.Wallet -= item.Price;
+                HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
+                _context.Users.Update(user);
+                _context.SaveChanges();
             }
             return RedirectToAction("Index");
         }
