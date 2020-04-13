@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -10,8 +11,7 @@ namespace Lab23v2.Models
         {
         }
 
-        public Lab23v2Context(DbContextOptions<Lab23v2Context> options)
-            : base(options)
+        public Lab23v2Context(DbContextOptions<Lab23v2Context> options): base(options)
         {
         }
 
@@ -66,8 +66,59 @@ namespace Lab23v2.Models
             });
 
             OnModelCreatingPartial(modelBuilder);
+            Seed(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public static void Seed(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Items>()
+                .HasData((new Items[]
+                {
+                    new Items()
+                    {
+                        ItemId = 1,
+                        ItemDesc = "Anodized Aluminum Case",
+                        Quantity = 4,
+                        Price = 88,
+                    },
+                     new Items()
+                    {
+                        ItemId = 2,
+                        ItemDesc = "60% Printed Circut Board (PCB)",
+                        Quantity = 1,
+                        Price = 45,
+                    },
+                      new Items()
+                    {
+                        ItemId = 3,
+                        ItemDesc = "75% Printed Circuit Board (PCB)",
+                        Quantity = 3,
+                        Price = 53,
+                    },
+                       new Items()
+                    {
+                        ItemId = 4,
+                        ItemDesc = "Tactile Mechanical Switches",
+                        Quantity = 300,
+                        Price = 4
+                       },
+                        new Items()
+                    {
+                        ItemId = 5,
+                        ItemDesc= "Linear Mechanical Switches",
+                        Quantity = 0,
+                        Price = 4
+                    },
+                         new Items()
+                    {
+                        ItemId = 6,
+                        ItemDesc = "Clicky Mechanical Switches",
+                        Quantity = 100,
+                        Price = 4
+                    },
+                }));
+        }
     }
 }

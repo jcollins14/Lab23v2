@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Lab23v2.Models.Items>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Shop</h1>
+@if (ViewBag.User != null)
+	{
+    <p>Welcome @ViewBag.User!</p>
+    <p>Your Wallet: @ViewBag.Wallet/.</p>
+	}
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemDesc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemDesc)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @if (ViewBag.User != null)
+                    {
+                        <a asp-action="Buy" asp-route-id="@item.ItemId">Buy</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
