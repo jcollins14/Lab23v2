@@ -44,7 +44,7 @@ namespace Lab23v2.Controllers
                 save.Wallet -= item.Price;
                 _context.Users.Update(save);
             }
-            return View();
+            return RedirectToAction("Index");
         }
 
         // GET: Items/Details/5

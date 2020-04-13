@@ -58,15 +58,15 @@ namespace Lab23v2.Controllers
         }
 
         [HttpPost]
-        public IActionResult VerifyLogin(string email, string pass)
+        public IActionResult Login(string email, string pass)
         {
-            var data = DB.Users.Find(email);
+            var data = DB.Users.Where(x => x.Email == email).FirstOrDefault();
             if (data.Pass == pass)
             {
                 HttpContext.Session.SetString("First Name", data.Fname.ToString());
                 HttpContext.Session.SetString("Wallet", data.Wallet.ToString());
                 HttpContext.Session.SetString("Email", data.Email.ToString());
-                return RedirectToAction("Shop");
+                return RedirectToAction("Index");
             }
             else
             {
@@ -78,16 +78,6 @@ namespace Lab23v2.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public IActionResult Users()
-        {
-            return View();
-        }
-        
-        public IActionResult Shop()
-        {
-            return View("Items/Index");
         }
     }
 }
