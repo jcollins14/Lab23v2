@@ -71,7 +71,7 @@ namespace Lab23v2.Controllers
             }
             else
             {
-            return View();
+            return RedirectToAction("NotLoggedInError","Users");
             }
         }
 

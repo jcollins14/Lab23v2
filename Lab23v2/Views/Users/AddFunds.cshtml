@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewData["Title"] = "AddFunds";
+}
+
+<h1>Add Funds to Your Account</h1> <br /><br />
+<p>You currently have @ViewBag.Wallet dollars.</p> <br /><br />
+
+<form method="post">
+    <label for="money">How much currency would you like to add to your wallet?</label>
+    <input type="number" name="money"/>
+    <input type="submit" action="AddFunds"/>
+</form>
+

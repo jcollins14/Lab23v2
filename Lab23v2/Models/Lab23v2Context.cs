@@ -17,6 +17,7 @@ namespace Lab23v2.Models
 
         public virtual DbSet<Items> Items { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<UserItems> UserItems { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

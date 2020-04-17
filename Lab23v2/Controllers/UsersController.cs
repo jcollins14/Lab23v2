@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lab23v2.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lab23v2.Controllers
 {
@@ -18,10 +19,35 @@ namespace Lab23v2.Controllers
             _context = context;
         }
 
+        public IActionResult NotLoggedInError()
+        {
+            return View();
+        }
         // GET: Users
         public async Task<IActionResult> Index()
         {
             return View(await _context.Users.ToListAsync());
+        }
+
+        public IActionResult AddFunds()
+        {
+            if (HttpContext.Session.GetString("email") == null)
+            {
+                return RedirectToAction("NotLoggedInError", "Users");
+            }
+            ViewBag.Wallet = HttpContext.Session.GetString("Wallet");
+            return View();
+        }
+
+       [HttpPost]
+        public IActionResult AddFunds(int money)
+        {
+            string email = HttpContext.Session.GetString("Email");
+            var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
+            user.Wallet += money;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Items");
         }
 
         // GET: Users/Details/5

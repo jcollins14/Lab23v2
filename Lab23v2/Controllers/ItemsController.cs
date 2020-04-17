@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lab23v2.Models;
 using Microsoft.AspNetCore.Http;
+using System.Security.Policy;
 
 namespace Lab23v2.Controllers
 {
@@ -22,6 +23,10 @@ namespace Lab23v2.Controllers
         // GET: Items
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetString("email") == null)
+            {
+                return RedirectToAction("NotLoggedInError", "Users");
+            }
             if (HttpContext.Session.GetString("First Name") != null)
             {
             ViewBag.User = HttpContext.Session.GetString("First Name");
@@ -30,12 +35,76 @@ namespace Lab23v2.Controllers
             return View(await _context.Items.ToListAsync());
         }
 
+        public IActionResult Purchased()
+        {
+            if (HttpContext.Session.GetString("email") == null)
+            {
+                return RedirectToAction("NotLoggedInError", "Users");
+            }
+            string email = HttpContext.Session.GetString("Email");
+            var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
+            List<Items> items = PurchasedList(user);
+            return View(items);
+        }
+        public IActionResult Return(int? id)
+        {
+            List<Items> items = new List<Items>();
+            string email = HttpContext.Session.GetString("Email");
+            var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
+            items = PurchasedList(user);
+            foreach (Items item in items)
+            {
+                if (item.ItemId == id)
+                {
+                    user.Wallet += item.Price;
+                    HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
+                    var delete = _context.UserItems.Where(x => x.UserID == user.UserId && x.ItemID == item.ItemId).FirstOrDefault();
+                    _context.UserItems.Remove(delete);
+                    _context.Users.Update(user);
+                    var update = _context.Items.Where(x => x.ItemId == item.ItemId).FirstOrDefault();
+                    update.Quantity++;
+                    _context.Items.Update(update);
+                    _context.SaveChanges();
+                    break;
+                }
+            }
+                return RedirectToAction("Purchased");
+        }
+
+        public List<Items> PurchasedList(Users user)
+        {
+            List<Items> items = new List<Items>();
+            List<Items> evaluate = new List<Items>();
+            var temp = _context.UserItems.Where(x => x.UserID == user.UserId).ToList();
+            foreach (var itemID in temp)
+            {
+                Items add = _context.Items.Where(x => x.ItemId == itemID.ItemID).FirstOrDefault();
+                add.Quantity = 1;
+                evaluate.Add(add);
+            }
+            foreach (Items check in evaluate)
+            {
+                if (items.Contains(check))
+                {
+                    int index = items.FindIndex(x => x.ItemId == check.ItemId);
+                    Items edit = items[index];
+                    items.Remove(items[index]);
+                    edit.Quantity++;
+                    items.Add(edit);
+                }
+                else
+                {
+                    items.Add(check);
+                }
+            }
+            return items;
+        }
         public IActionResult Buy(int? id)
         {
             string email = HttpContext.Session.GetString("Email");
             var item = _context.Items.Where(x => x.ItemId == id).FirstOrDefault();
             var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
-            if (item.Price < user.Wallet)
+            if (item.Price < user.Wallet && item.Quantity > 0)
             {
                 item.Quantity--;
                 _context.Items.Update(item);
@@ -43,6 +112,12 @@ namespace Lab23v2.Controllers
                 user.Wallet -= item.Price;
                 HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
                 _context.Users.Update(user);
+                UserItems tempItem = new UserItems()
+                {
+                    UserID = user.UserId,
+                    ItemID = item.ItemId
+                };
+                _context.UserItems.Add(tempItem);
                 _context.SaveChanges();
             }
             return RedirectToAction("Index");
