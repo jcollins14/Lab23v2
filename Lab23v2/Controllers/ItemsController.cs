@@ -59,8 +59,7 @@ namespace Lab23v2.Controllers
                     user.Wallet += item.Price;
                     HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
                     var delete = _context.UserItems.Where(x => x.UserID == user.UserId && x.ItemID == item.ItemId).FirstOrDefault();
-                    Items update = new Items();
-                    update = _context.Items.Where(x => x.ItemId == id).FirstOrDefault();
+                    var update = _context.Items.Where(x => x.ItemId == id).FirstOrDefault();
                     update.Quantity++;
                     _context.UserItems.Remove(delete);
                     _context.Users.Update(user);
