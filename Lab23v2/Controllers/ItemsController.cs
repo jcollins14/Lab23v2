@@ -23,7 +23,7 @@ namespace Lab23v2.Controllers
         // GET: Items
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString("email") == null)
+            if (HttpContext.Session.GetString("Email") == null)
             {
                 return RedirectToAction("NotLoggedInError", "Users");
             }
@@ -37,7 +37,7 @@ namespace Lab23v2.Controllers
 
         public IActionResult Purchased()
         {
-            if (HttpContext.Session.GetString("email") == null)
+            if (HttpContext.Session.GetString("Email") == null)
             {
                 return RedirectToAction("NotLoggedInError", "Users");
             }
@@ -59,10 +59,11 @@ namespace Lab23v2.Controllers
                     user.Wallet += item.Price;
                     HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
                     var delete = _context.UserItems.Where(x => x.UserID == user.UserId && x.ItemID == item.ItemId).FirstOrDefault();
+                    Items update = new Items();
+                    update = _context.Items.Where(x => x.ItemId == id).FirstOrDefault();
+                    update.Quantity++;
                     _context.UserItems.Remove(delete);
                     _context.Users.Update(user);
-                    var update = _context.Items.Where(x => x.ItemId == item.ItemId).FirstOrDefault();
-                    update.Quantity++;
                     _context.Items.Update(update);
                     _context.SaveChanges();
                     break;
@@ -108,7 +109,6 @@ namespace Lab23v2.Controllers
             {
                 item.Quantity--;
                 _context.Items.Update(item);
-                _context.SaveChanges();
                 user.Wallet -= item.Price;
                 HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
                 _context.Users.Update(user);

@@ -31,7 +31,7 @@ namespace Lab23v2.Controllers
 
         public IActionResult AddFunds()
         {
-            if (HttpContext.Session.GetString("email") == null)
+            if (HttpContext.Session.GetString("Email") == null)
             {
                 return RedirectToAction("NotLoggedInError", "Users");
             }
@@ -46,6 +46,7 @@ namespace Lab23v2.Controllers
             var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
             user.Wallet += money;
             _context.Users.Update(user);
+            HttpContext.Session.SetString("Wallet",user.Wallet.ToString());
             _context.SaveChanges();
             return RedirectToAction("Index", "Items");
         }
