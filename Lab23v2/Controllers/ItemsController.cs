@@ -48,21 +48,21 @@ namespace Lab23v2.Controllers
         }
         public IActionResult Return(int? id)
         {
-            List<Items> items = new List<Items>();
+            List<Items> bought = new List<Items>();
             string email = HttpContext.Session.GetString("Email");
             var user = _context.Users.Where(x => x.Email == email).FirstOrDefault();
-            items = PurchasedList(user);
-            foreach (Items item in items)
+            bought = PurchasedList(user);
+            foreach (Items item in bought)
             {
                 if (item.ItemId == id)
                 {
                     user.Wallet += item.Price;
                     HttpContext.Session.SetString("Wallet", user.Wallet.ToString());
-                    var delete = _context.UserItems.Where(x => x.UserID == user.UserId && x.ItemID == item.ItemId).FirstOrDefault();
-                    var update = _context.Items.Where(x => x.ItemId == id).FirstOrDefault();
-                    update.Quantity++;
-                    _context.UserItems.Remove(delete);
                     _context.Users.Update(user);
+                    var delete = _context.UserItems.Where(x => x.UserID == user.UserId && x.ItemID == item.ItemId).FirstOrDefault();
+                    _context.UserItems.Remove(delete);
+                    var update = _context.Items.Where(x => x.ItemId == id).First();
+                    update.Quantity++;
                     _context.Items.Update(update);
                     _context.SaveChanges();
                     break;
@@ -79,6 +79,7 @@ namespace Lab23v2.Controllers
             foreach (var itemID in temp)
             {
                 Items add = _context.Items.Where(x => x.ItemId == itemID.ItemID).FirstOrDefault();
+                _context.SaveChanges();
                 add.Quantity = 1;
                 evaluate.Add(add);
             }
